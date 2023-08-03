@@ -1,0 +1,15 @@
+{
+  "name": "video-call-webapp-backend",
+  "version": "1.0.0",
+  "description": "video chat app using WebRTC, Nodejs and Reactjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "Pankaj Agham",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.1"
+  }
+}
