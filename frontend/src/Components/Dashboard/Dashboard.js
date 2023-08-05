@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { setUserName,increaseCounter } from '../store/slices/dashboardSlice' 
+import { saveUserName,increaseCounter } from '../../store/slices/dashboardSlice';
 
 
 const Dashboard = () => {
@@ -28,7 +28,7 @@ const Dashboard = () => {
                     new User name is {username}
                 </span>
                 <br />
-                <button onClick={()=> dispatch(setUserName("Donny"))}>set user name</button>
+                <button onClick={()=> dispatch(saveUserName("Donny"))}>set user name</button>
             </div>
         </>
     )

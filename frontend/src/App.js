@@ -3,12 +3,11 @@ import {connectWithWebSocket} from "./utils/wssConnection/wssConnection"
 import {
   createBrowserRouter,
   RouterProvider,
-  Route
 } from 'react-router-dom';
 
 import './App.css';
-import Dashboard from './Components/Dashboard';
-import LoginPage from './Components/LoginPage';
+import Dashboard from './Components/Dashboard/Dashboard';
+import LoginPage from './Components/LoginPage/LoginPage';
 
 const router = createBrowserRouter([
   {

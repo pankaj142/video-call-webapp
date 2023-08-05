@@ -9,7 +9,7 @@ export const dashboardSlice = createSlice({
     name : "dashboard",
     initialState,
     reducers: {
-        setUserName : (state, action) => {
+        saveUserName : (state, action) => {
             state.userName = action.payload
         },
         increaseCounter : (state, action) => {
@@ -18,5 +18,5 @@ export const dashboardSlice = createSlice({
     }
 })
 
-export const  { setUserName, increaseCounter } = dashboardSlice.actions;
+export const  { saveUserName, increaseCounter } = dashboardSlice.actions;
 export default dashboardSlice.reducer;
