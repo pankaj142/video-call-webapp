@@ -22,11 +22,11 @@ const router = createBrowserRouter([
 ])
 
 
-function App() {
-
+const App = () => {
   useEffect(()=>{
     connectWithWebSocket();
   }, [])
+
   return (
     <RouterProvider router={router}/>
   );
