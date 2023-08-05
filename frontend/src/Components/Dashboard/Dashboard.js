@@ -1,36 +1,36 @@
 import { useSelector, useDispatch } from "react-redux";
 import { saveUserName,increaseCounter } from '../../store/slices/dashboardSlice';
-
+import './Dashboard.css'
+import logo from "../../assets/logo.png"
 
 const Dashboard = () => {
     const username = useSelector((state) => state.dashboard.userName)
-    const counter = useSelector((state) => state.dashboard.counter);
     const dispatch = useDispatch();
 
-    const handleCounterIncrease = () => {
-        dispatch(increaseCounter())
-    }
     return (
-        <>
-            <h1>
-                Dashboad 
-            </h1>
-
-            <h2>
-                counter : {counter}
-                <br />
-                <button onClick={handleCounterIncrease}>Increase</button>
-            </h2>
-
-            <div>
-                
-                <span>
-                    new User name is {username}
-                </span>
-                <br />
-                <button onClick={()=> dispatch(saveUserName("Donny"))}>set user name</button>
+        <div className="dashboard_container background_main_color">
+            <div className="dashboard_left_section">
+                <div className="dashboard_content_container">
+                    content 
+                </div>
+                <div className="dashboard_rooms_container background_secondary_color">
+                    room
+                </div>
             </div>
-        </>
+            <div className="dashboard_right_section background_secondary_color">
+                <div className="dashboard_active_users_list">
+                    users
+                </div>
+                <div className="dashboard_logo_container">
+                    <img
+                        className="dashboard_logo_image"
+
+                        src={logo} 
+                        alt="App logo" 
+                    />
+                </div>
+            </div>
+        </div>
     )
 };
 
