@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'; 
 
 const initialState = {
-    userName : "Bob",
-    counter : 0
+    username : "",
+    activeUsers : []
 }
 
 export const dashboardSlice = createSlice({
@@ -10,13 +10,16 @@ export const dashboardSlice = createSlice({
     initialState,
     reducers: {
         saveUserName : (state, action) => {
-            state.userName = action.payload
+            state.username = action.payload
         },
-        increaseCounter : (state, action) => {
-            state.counter++;
+        setActiveUsers: (state, action) => {
+            return {
+                ...state,
+                activeUsers : action.payload
+            }
         }
     }
 })
 
-export const  { saveUserName, increaseCounter } = dashboardSlice.actions;
+export const  { saveUserName, setActiveUsers } = dashboardSlice.actions;
 export default dashboardSlice.reducer;

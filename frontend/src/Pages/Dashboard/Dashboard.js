@@ -1,13 +1,9 @@
-// import { useSelector, useDispatch } from "react-redux";
-// import { saveUserName,increaseCounter } from '../../store/slices/dashboardSlice';
+
 import ActiveUsersList from "../../Components/ActiveUsersList/ActiveUsersList"
 import './Dashboard.css'
 import logo from "../../assets/logo.png"
 
 const Dashboard = () => {
-    // const username = useSelector((state) => state.dashboard.userName)
-    // const dispatch = useDispatch();
-
     return (
         <div className="dashboard_container background_main_color">
             <div className="dashboard_left_section">
