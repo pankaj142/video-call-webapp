@@ -24,7 +24,6 @@ const Dashboard = () => {
                 <div className="dashboard_logo_container">
                     <img
                         className="dashboard_logo_image"
-
                         src={logo} 
                         alt="App logo" 
                     />

@@ -6,8 +6,8 @@ import {
 } from 'react-router-dom';
 
 import './App.css';
-import Dashboard from './Components/Dashboard/Dashboard';
-import LoginPage from './Components/LoginPage/LoginPage';
+import Dashboard from './Pages/Dashboard/Dashboard';
+import LoginPage from './Pages/LoginPage/LoginPage';
 
 const router = createBrowserRouter([
   {

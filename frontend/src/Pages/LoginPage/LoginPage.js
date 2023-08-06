@@ -1,7 +1,7 @@
 import {useState} from "react";
 import  './LoginPage.css';
-import UserNameInput from "./UserNameInput";
-import SubmitButton from "./SubmitButton";
+import UserNameInput from "../../Components/UserNameInput";
+import SubmitButton from "../../Components/SubmitButton";
 import logo from "../../assets/logo.png";
 
 import { useNavigate } from 'react-router-dom';
