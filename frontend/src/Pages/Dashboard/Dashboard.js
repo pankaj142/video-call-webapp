@@ -1,11 +1,12 @@
-import { useSelector, useDispatch } from "react-redux";
-import { saveUserName,increaseCounter } from '../../store/slices/dashboardSlice';
+// import { useSelector, useDispatch } from "react-redux";
+// import { saveUserName,increaseCounter } from '../../store/slices/dashboardSlice';
+import ActiveUsersList from "../../Components/ActiveUsersList/ActiveUsersList"
 import './Dashboard.css'
 import logo from "../../assets/logo.png"
 
 const Dashboard = () => {
-    const username = useSelector((state) => state.dashboard.userName)
-    const dispatch = useDispatch();
+    // const username = useSelector((state) => state.dashboard.userName)
+    // const dispatch = useDispatch();
 
     return (
         <div className="dashboard_container background_main_color">
@@ -19,7 +20,7 @@ const Dashboard = () => {
             </div>
             <div className="dashboard_right_section background_secondary_color">
                 <div className="dashboard_active_users_list">
-                    users
+                    <ActiveUsersList/>
                 </div>
                 <div className="dashboard_logo_container">
                     <img

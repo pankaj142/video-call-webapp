@@ -7,14 +7,16 @@ import logo from "../../assets/logo.png";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import {saveUserName } from '../../store/slices/dashboardSlice';
+import {registerNewUser} from '../../utils/wssConnection/wssConnection';
 
 const LoginPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate()
-    const [userName, setUserName] = useState("");
+    const [username, setUsername] = useState("");
 
     const handleSubmit = () =>{
-        dispatch(saveUserName(userName))
+        registerNewUser(username);
+        dispatch(saveUserName(username))
         navigate("/dashboard")
     }
 
@@ -27,7 +29,7 @@ const LoginPage = () => {
                 <div className="login-page_title_container">
                     <h2>Get on Board</h2>
                 </div>
-                <UserNameInput userName={userName} setUserName={setUserName} />
+                <UserNameInput username={username} setUsername={setUsername} />
                 <SubmitButton handleSubmit={handleSubmit} />
             </div>
         </div>
