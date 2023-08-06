@@ -18,8 +18,19 @@ const io = socket(server, {
     }
 })
 
+const peers = [];
+
 io.on('connection', (socket)=>{
     socket.emit('socketConnectionStart', null);
     console.log("new user connected !", socket.id)
     // console.log("socket.io ", socket)
+
+    socket.on('register-new-user', (data)=>{
+        peers.push({
+            username: data.username,
+            socket: data.socketId
+        })
+        console.log('registed new user');
+        console.log(peers);
+    })
 })
