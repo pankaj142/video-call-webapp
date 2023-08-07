@@ -19,7 +19,7 @@ const io = socket(server, {
 })
 
 // active users list
-const peers = [];
+let peers = [];
 
 const broadcastEventTypes = {
     ACTIVE_USERS : 'ACTIVE_USERS',
@@ -45,4 +45,17 @@ io.on('connection', (socket)=>{
             activeUsers : peers
         })
     })
+
+    // this event occues when user closes the window / tab or handled on client side
+    socket.on('disconnect', () =>{
+        // remove the user from peers list
+        peers = peers.filter((peer)=> peer.socketId !== socket.id);
+
+        // send new active users list to all users
+        io.sockets.emit('broadcast', {
+            event: broadcastEventTypes.ACTIVE_USERS,
+            activeUsers : peers
+        })
+    })
+
 })
