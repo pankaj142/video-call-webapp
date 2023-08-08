@@ -3,11 +3,11 @@ import { store } from "../../store/store";
 import { setLocalStream } from "../../store/slices/callSlice";
 
 const configuration = {
-    'video' : true,
+    // 'video' : true,
     'audio' : true
 }
 
-// get access to cameras and microphonec connected to the computer or smarphone
+// get access to cameras and microphonec connected to the computer or smartphone
 export const getLocalStream = () => {
     navigator.mediaDevices.getUserMedia(configuration)
         .then((stream) => {

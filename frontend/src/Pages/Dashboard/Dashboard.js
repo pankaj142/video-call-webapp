@@ -1,9 +1,11 @@
 
-import ActiveUsersList from "../../Components/ActiveUsersList/ActiveUsersList"
-import './Dashboard.css'
-import logo from "../../assets/logo.png"
 import { useEffect } from "react";
+import ActiveUsersList from "../../Components/ActiveUsersList/ActiveUsersList"
+import DirectCall from "../../Components/DirectCall/DirectCall";
 import * as webRTChandler from "../../utils/webRTC/webRTCHandler";
+
+import logo from "../../assets/logo.png";
+import './Dashboard.css';
 
 const Dashboard = () => {
 
@@ -15,7 +17,8 @@ const Dashboard = () => {
         <div className="dashboard_container background_main_color">
             <div className="dashboard_left_section">
                 <div className="dashboard_content_container">
-                    content 
+                    <DirectCall />
+                    
                 </div>
                 <div className="dashboard_rooms_container background_secondary_color">
                     room
