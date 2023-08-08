@@ -2,8 +2,15 @@
 import ActiveUsersList from "../../Components/ActiveUsersList/ActiveUsersList"
 import './Dashboard.css'
 import logo from "../../assets/logo.png"
+import { useEffect } from "react";
+import * as webRTChandler from "../../utils/webRTC/webRTCHandler";
 
 const Dashboard = () => {
+
+    useEffect(() => {
+        webRTChandler.getLocalStream()
+    }, []);
+
     return (
         <div className="dashboard_container background_main_color">
             <div className="dashboard_left_section">
