@@ -23,7 +23,7 @@ const LocalVideoView = () => {
     useEffect(()=>{
         if(localStream){
             const localVideo = localVideoRef.current;
-            localVideo.src = localStream;
+            localVideo.srcObject = localStream;
 
             // for some browser autoPlay applied on element will not work, so explicietely adding it, to start the video manually 
             localVideo.onloadedmetadata = () => {
