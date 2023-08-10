@@ -1,5 +1,6 @@
 import { setActiveUsers } from '../../store/slices/dashboardSlice';
 import { store } from "../../store/store";
+import * as webRTCHandler from "../webRTC/webRTCHandler";
 
 import socketClient  from "socket.io-client";
 
@@ -21,9 +22,19 @@ export const connectWithWebSocket = () =>{
     })
 
     socket.on('broadcast', (data)=>{
-        console.log("broadcast event happened FE")
         handleBroadcastEvent(data);
     })
+
+    // Listeners related with Direct call
+
+    socket.on('pre-offer', (data)=>{
+        webRTCHandler.handlePreOffer(data);
+    })
+
+    socket.on('pre-offer-answer', (data)=>{
+        webRTCHandler.handlePreOfferAnswer(data)
+    })
+
 }
 
 export const registerNewUser = (username) =>{
@@ -33,10 +44,23 @@ export const registerNewUser = (username) =>{
     })
 }
 
+// emitting events to sever related to direct calls
+
+// caller emits this event
+export const sendPreOffer = (data) =>{
+    socket.emit('pre-offer', data);
+}
+
+// callee emits this event
+export const sendPreOfferAnswer = (data) => {
+    console.log("sendPreOfferAnswer",data)    
+    socket.emit('pre-offer-answer', data)
+}
+
+
 const handleBroadcastEvent = (data) =>{
     switch (data.event) {
         case broadcastEventTypes.ACTIVE_USERS :
-            console.log("inside FE wss connection", data.activeUsers)
             const activeUsers = data.activeUsers.filter((activeUser)=> activeUser.socketId !== socket.id)
             store.dispatch(setActiveUsers(activeUsers));
             break;

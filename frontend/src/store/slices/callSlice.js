@@ -9,7 +9,13 @@ export const callStates =  {
 
 const initialState = {
     localStream : null,
-    callState : callStates.CALL_UNAVAILABLE
+    callState : callStates.CALL_UNAVAILABLE,
+    callingDialogVisible: false,
+    callerUsername: '',
+    callRejected: {
+        rejected : false,
+        reason: ''
+    }
 }
  
 
@@ -28,9 +34,27 @@ export const callSlice = createSlice({
                 ...state,
                 callState: action.payload
             }
+        },
+        setCallingDialogVisibile : (state, action) =>{
+            return {
+                ...state,
+                callingDialogVisible : action.payload
+            }
+        },
+        setCallerUsername : (state, action) =>{
+            return {
+                ...state,
+                callerUsername: action.payload
+            }
+        },
+        setCallRejected: (state, action) =>{
+            return {
+                ...state,
+                callRejected: action.payload
+            }
         }
     }
 })
 
-export const  { setLocalStream, setCallState } = callSlice.actions;
+export const  { setLocalStream, setCallState, setCallingDialogVisibile, setCallerUsername, setCallRejected } = callSlice.actions;
 export default callSlice.reducer;

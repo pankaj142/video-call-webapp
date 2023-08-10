@@ -29,7 +29,6 @@ const broadcastEventTypes = {
 io.on('connection', (socket)=>{
     socket.emit('socketConnection', null);
     console.log("new user connected !", socket.id)
-    // console.log("socket.io ", socket)
 
     socket.on('register-new-user', (data)=>{
         peers.push({
@@ -55,6 +54,27 @@ io.on('connection', (socket)=>{
         io.sockets.emit('broadcast', {
             event: broadcastEventTypes.ACTIVE_USERS,
             activeUsers : peers
+        })
+    })
+
+    // events listeners related to direct calls
+
+    // receive the pre-order event from caller
+    socket.on('pre-offer', (data)=>{
+      console.log("pre-offer handler");
+
+      // send event to callee 
+      io.to(data.callee.socketId).emit('pre-offer', {
+        callerUsername: data.caller.username,
+        callerSocketId: socket.id
+      })
+    })
+
+    
+    socket.on('pre-offer-answer', (data)=>{
+        console.log('handling pre offer answer');
+        io.to(data.callerSocketId).emit('pre-offer-answer', {
+            answer : data.answer
         })
     })
 
