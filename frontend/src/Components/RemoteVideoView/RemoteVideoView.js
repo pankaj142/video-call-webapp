@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
 
 const styles = {
     videoContainer : {
@@ -12,14 +11,12 @@ const styles = {
     }
 }
 
-const RemoteVideoView = () => {
-    const remoteStream = useSelector((state)=> state.call.remoteStream);
+const RemoteVideoView = ({remoteStream}) => {
     const remoteVideoRef = useRef();
-
     useEffect(()=>{
         if(remoteStream){
             const remoteVideo = remoteVideoRef.current;
-            remoteVideo.src = remoteStream;
+            remoteVideo.srcObject = remoteStream;
 
             // for some browser autoPlay applied on element will not work, so explicietely adding it, to start the video manually 
             remoteVideo.onloadedmetadata = () => {

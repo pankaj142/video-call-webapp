@@ -9,6 +9,7 @@ export const callStates =  {
 
 const initialState = {
     localStream : null,
+    remoteStream : null,
     callState : callStates.CALL_UNAVAILABLE,
     callingDialogVisible: false,
     callerUsername: '',
@@ -52,9 +53,15 @@ export const callSlice = createSlice({
                 ...state,
                 callRejected: action.payload
             }
+        },
+        setRemoteStream: (state, action) => {
+            return {
+                ...state,
+                remoteStream: action.payload
+            }
         }
     }
 })
 
-export const  { setLocalStream, setCallState, setCallingDialogVisibile, setCallerUsername, setCallRejected } = callSlice.actions;
+export const  { setLocalStream, setCallState, setCallingDialogVisibile, setCallerUsername, setCallRejected, setRemoteStream } = callSlice.actions;
 export default callSlice.reducer;

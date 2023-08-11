@@ -6,15 +6,16 @@ import LocalVideoView from "../LocalVideoView/LocalVideoView";
 import RemoteVideoView from "../RemoteVideoView/RemoteVideoView";
 import {  useSelector } from "react-redux/es/hooks/useSelector";
 
-const DirectCall = ({localStream, remoteStream}) => {
+const DirectCall = () => {
     const callState = useSelector((state)=> state.call.callState)
     const callerUsername = useSelector((state)=> state.call.callerUsername);
     const callingDialogVisible = useSelector((state) => state.call.callingDialogVisible)
     const callRejected = useSelector((state) => state.call.callRejected);
+    const remoteStream = useSelector((state) => state.call.remoteStream);
 
     return(
         <>
-            <LocalVideoView localStream={localStream} />
+            <LocalVideoView />
             {remoteStream && <RemoteVideoView remoteStream={remoteStream} />}
             {callRejected.rejected && <CallRejectedDialog reason={callRejected.reason} />}
             { callState === callStates.CALL_REQUESTED && <IncomingCallDialog callerUsername={callerUsername} />}

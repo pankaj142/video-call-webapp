@@ -5,7 +5,8 @@ import {
   callStates,
   setCallingDialogVisibile,
   setCallerUsername,
-  setCallRejected
+  setCallRejected,
+  setRemoteStream
 } from "../../store/slices/callSlice";
 import * as wss from "../wssConnection/wssConnection";
 
@@ -62,8 +63,9 @@ const createPeerConnection = () =>{
     peerConnection.addTrack(track, localStream);
   }
 
-  // event-1 ontrack : after connection is established, we receive tracks from other user, we will get streams, these streams will be strored in our store as remote stream.
+  // event-1 ontrack : after webRTC connection is established, we receive tracks from other user, we will get streams, these streams will be stored in our store as remote stream.
   peerConnection.ontrack = ({streams:[stream]}) => {
+    store.dispatch(setRemoteStream(stream));
     // dispatch remote stream in our store
   }
 
@@ -124,6 +126,7 @@ export const acceptIncomingCallRequest = () => {
         callerSocketId: connectedUserSocketId,
         answer: preOfferAnswers.CALL_ACCEPTED
     })
+    store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
 }
 
 
