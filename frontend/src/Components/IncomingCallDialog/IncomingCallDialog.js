@@ -6,12 +6,10 @@ import './IncomingCallDialog.css';
 const IncomingCallDialog = ({callerUsername}) =>{
 
     const handleAcceptCall = () =>{
-        console.log("IncomingCallDialog component handleAcceptCall")
         acceptIncomingCallRequest()
     }
 
     const handleRejectCall = () => {
-        console.log("IncomingCallDialog component handleRejectCall")
         rejectIncomingCallRequest()
     }
 

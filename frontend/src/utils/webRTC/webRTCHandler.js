@@ -15,18 +15,35 @@ const preOfferAnswers = {
   CALL_NOT_AVAILABLE: "CALL_NOT_AVAILABLE", // if 1) user not get access to local stream or 2) callState will be different that CALL_AVAILABLE
 };
 
-const configuration = {
+const defaultConstrains = {
   video: true,
   audio: true,
 };
 
+// configuration related to RTCConnection
+let configuration = {
+  iceServers: [{
+    urls: 'stun:stun.l.google.com:13902' // free stun server url
+  }]
+}
+
+let connectedUserSocketId;
+// for caller => hold socketId of callee
+// for callee => hold socketID of caller
+
+let peerConnection;
+
 // get access to cameras and microphonec connected to the computer or smartphone
 export const getLocalStream = () => {
   navigator.mediaDevices
-    .getUserMedia(configuration)
+    .getUserMedia(defaultConstrains)
     .then((stream) => {
       store.dispatch(setLocalStream(stream));
       store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+      
+      // create peerConnection once localStream is available
+      // for each new call, we create new peerConnection
+      createPeerConnection();
     })
     .catch((err) => {
       console.log(
@@ -36,10 +53,40 @@ export const getLocalStream = () => {
     });
 };
 
-// -------------------------  pre-order   ------------------------------------
-let connectedUserSocketId;
-// for caller => hold socketId of callee
-// for callee => hold socketID of caller
+const createPeerConnection = () =>{
+  peerConnection = new RTCPeerConnection(configuration);
+  const localStream = store.getState().call.localStream;
+
+  // for audio and video tracks in localStream, will add this tracks to peerConnection
+  for(const track of localStream.getTracks()){
+    peerConnection.addTrack(track, localStream);
+  }
+
+  // event-1 ontrack : after connection is established, we receive tracks from other user, we will get streams, these streams will be strored in our store as remote stream.
+  peerConnection.ontrack = ({streams:[stream]}) => {
+    // dispatch remote stream in our store
+  }
+
+  // event-2 onicecandidate : receive ICE candidate from stun server, we will send that ice candidates to connected user
+  peerConnection.onicecandidate = (event) => {
+    console.log("getting ICE candidates from STUN server")
+    // send to connected user our ice candidate
+    if(event.candidate){
+      wss.sendWebRTCCandidate({
+        candidate: event.candidate,
+        connectedUserSocketId: connectedUserSocketId
+      })
+    }
+  }
+
+  peerConnection.onconnectionstatechange = (event) =>{
+    if(peerConnection.connectionState === 'connected'){
+      console.log("successfully connected with other peer");
+    }
+  }
+
+}
+
 
 // caller handle
 export const callToOtherUser = (calleeDetails) => {
@@ -55,6 +102,7 @@ export const callToOtherUser = (calleeDetails) => {
     },
   });
 };
+
 
 // callee handle
 export const handlePreOffer = (data) => {
@@ -90,9 +138,9 @@ export const rejectIncomingCallRequest = () => {
 // caller handle
 export const handlePreOfferAnswer = (data) =>{
     store.dispatch(setCallingDialogVisibile(false));
-
     if(data.answer === preOfferAnswers.CALL_ACCEPTED){
         // send webRTC offer
+        sendOffer();
     }else{
         let rejectionReason;
         if(data.answer === preOfferAnswers.CALL_NOT_AVAILABLE){
@@ -104,8 +152,60 @@ export const handlePreOfferAnswer = (data) =>{
             rejected: true,
             reason: rejectionReason
         }))
+
+        // reset call data
+        resetCallData()
     }
 } 
+
+// send webRTC offer - caller handle
+export const sendOffer = async () =>{
+    // crate SDP offer 
+    const offer = await peerConnection.createOffer();
+
+    // set SDP offer as local Description
+    await peerConnection.setLocalDescription(offer);
+
+    // send this offer to callee
+    wss.sendWebRTCOffer({
+      calleeSocketId: connectedUserSocketId,
+      offer: offer 
+    })
+}
+
+// callee handle
+export const handleOffer = async (data) =>{
+
+  // callee sets offer as remote description 
+  await peerConnection.setRemoteDescription(data.offer);
+
+  // create SDP answer
+  const answer  = await peerConnection.createAnswer();
+
+  // set SDP answer as local description
+  peerConnection.setLocalDescription(answer);
+
+  wss.sendWebRTCAnswer({
+    callerSocketId: connectedUserSocketId,
+    answer: answer
+  })
+}
+
+export const handleAnswer = async (data) =>{
+  // set SDP answer as remote description
+  await peerConnection.setRemoteDescription(data.answer);
+}
+
+export const handleCandidate = async (data) => {
+   try{
+      console.log("adding ICE candidates")
+      // add the ICE candidate from remote user
+      await peerConnection.addIceCandidate(data.candidate);
+   }catch(err){
+      console.error("error occured when trying to add received ICE candidates", err);
+   }
+}
+
 
 export const checkIfCallIsPossible = () => {
   if (
@@ -123,5 +223,3 @@ export const resetCallData = () => {
     store.dispatch(setCallState(callStates.CALL_AVAILABLE));
 }
 
-
-// -------------------------  pre-order end  ------------------------------------
