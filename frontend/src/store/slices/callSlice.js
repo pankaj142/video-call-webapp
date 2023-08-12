@@ -9,14 +9,16 @@ export const callStates =  {
 
 const initialState = {
     localStream : null,
-    remoteStream : null,
     callState : callStates.CALL_UNAVAILABLE,
     callingDialogVisible: false,
     callerUsername: '',
     callRejected: {
         rejected : false,
         reason: ''
-    }
+    },
+    remoteStream : null,
+    localCameraEnabled: true,
+    localMicrophoneEnabled: true
 }
  
 
@@ -59,9 +61,21 @@ export const callSlice = createSlice({
                 ...state,
                 remoteStream: action.payload
             }
+        },
+        setLocalMicrophoneEnabled: (state, action) =>{
+            return {
+                ...state,
+                localMicrophoneEnabled: action.payload
+            }
+        },
+        setLocalCameraEnabled: (state, action) =>{
+            return {
+                ...state,
+                localCameraEnabled: action.payload
+            }
         }
     }
 })
 
-export const  { setLocalStream, setCallState, setCallingDialogVisibile, setCallerUsername, setCallRejected, setRemoteStream } = callSlice.actions;
+export const  { setLocalStream, setCallState, setCallingDialogVisibile, setCallerUsername, setCallRejected, setRemoteStream, setLocalMicrophoneEnabled, setLocalCameraEnabled } = callSlice.actions;
 export default callSlice.reducer;
