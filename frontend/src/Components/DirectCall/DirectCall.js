@@ -1,10 +1,12 @@
 import { callStates } from "../../store/slices/callSlice";
+import {  useSelector } from "react-redux/es/hooks/useSelector";
+
 import CallRejectedDialog from "../CallRejectedDialog/CallRejectedDialog";
 import CallingDialog from "../CallingDialog/CallingDialog";
 import IncomingCallDialog from "../IncomingCallDialog/IncomingCallDialog";
 import LocalVideoView from "../LocalVideoView/LocalVideoView";
 import RemoteVideoView from "../RemoteVideoView/RemoteVideoView";
-import {  useSelector } from "react-redux/es/hooks/useSelector";
+import ConversationButtons from "../ConversationButtons/ConversationButtons";
 
 const DirectCall = () => {
     const callState = useSelector((state)=> state.call.callState)
@@ -20,6 +22,7 @@ const DirectCall = () => {
             {callRejected.rejected && <CallRejectedDialog reason={callRejected.reason} />}
             { callState === callStates.CALL_REQUESTED && <IncomingCallDialog callerUsername={callerUsername} />}
             {callingDialogVisible && <CallingDialog/>}
+            <ConversationButtons />
         </>
     );
 }
