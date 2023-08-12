@@ -6,7 +6,8 @@ import {
   setCallingDialogVisibile,
   setCallerUsername,
   setCallRejected,
-  setRemoteStream
+  setRemoteStream,
+  setScreenSharingActive
 } from "../../store/slices/callSlice";
 import * as wss from "../wssConnection/wssConnection";
 
@@ -226,3 +227,42 @@ export const resetCallData = () => {
     store.dispatch(setCallState(callStates.CALL_AVAILABLE));
 }
 
+let screenSharingStream;
+
+export const switchForScreenSharingStream = async () => {
+  if(!store.getState().call.screenSharingActive){ // screen is NOT shared, so, STOP camera stream sharing and start screen sharing stream
+    try{
+        screenSharingStream = await navigator.mediaDevices.getDisplayMedia({video: true});
+        store.dispatch(setScreenSharingActive(true));
+        const senders = peerConnection.getSenders(); // returns array of objects, each of which represents the RTP sender responsible for transmitting one track's (video or audio) data
+
+        console.log("senders", senders);
+    
+        // get sender which sends video track (ie. sender with kind = video)
+        // currently, this sender is sending camera video track
+        const sender = senders.find(sender => sender.track.kind === screenSharingStream.getVideoTracks()[0].kind);
+        
+        // replace the camera video track that this sender is sending, with screen sharing video track 
+        sender.replaceTrack(screenSharingStream.getVideoTracks()[0]); // this means now, we are not sending anymore streams from our camera, but stream from screen sharing stream
+    }catch(err){
+      console.error("error occured when trying to get screen sharing stream", err);
+    }
+  }else{ // screen is shared, so STOP screen sharing and start camera stream sharing
+      const localStream = store.getState().call.localStream;
+      const senders = peerConnection.getSenders(); // returns array of objects, each of which represents the RTP sender responsible for transmitting one track's (video or audio) data
+
+      // find sender which sends track as our localStream video track (ie. sender with kind = video)
+      // currently, this sender is sending screen sharing video track
+      const sender = senders.find(sender => sender.track.kind === localStream.getVideoTracks()[0].kind);
+
+      // now, replace the screen sharing video track, in that sender with, camera video track 
+      sender.replaceTrack(localStream.getVideoTracks()[0]);
+
+      store.dispatch(setScreenSharingActive(false)); // screen sharing is STOPPed
+
+      // we have only replaced the sender video track, from screen video track with camera video track 
+      // but the browser will be still generating that screen video stream 
+      // so we need to stop the screen stream
+      screenSharingStream.getTracks().forEach(track => track.stop());
+  }
+}

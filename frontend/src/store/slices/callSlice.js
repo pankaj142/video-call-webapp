@@ -18,7 +18,8 @@ const initialState = {
     },
     remoteStream : null,
     localCameraEnabled: true,
-    localMicrophoneEnabled: true
+    localMicrophoneEnabled: true,
+    screenSharingActive: false
 }
  
 
@@ -73,9 +74,15 @@ export const callSlice = createSlice({
                 ...state,
                 localCameraEnabled: action.payload
             }
+        },
+        setScreenSharingActive: (state, action) =>{
+            return {
+                ...state,
+                screenSharingActive: action.payload
+            }
         }
     }
 })
 
-export const  { setLocalStream, setCallState, setCallingDialogVisibile, setCallerUsername, setCallRejected, setRemoteStream, setLocalMicrophoneEnabled, setLocalCameraEnabled } = callSlice.actions;
+export const  { setLocalStream, setCallState, setCallingDialogVisibile, setCallerUsername, setCallRejected, setRemoteStream, setLocalMicrophoneEnabled, setLocalCameraEnabled,setScreenSharingActive } = callSlice.actions;
 export default callSlice.reducer;
