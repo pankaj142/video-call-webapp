@@ -7,7 +7,8 @@ import {
   setCallerUsername,
   setCallRejected,
   setRemoteStream,
-  setScreenSharingActive
+  setScreenSharingActive,
+  resetCallDataState
 } from "../../store/slices/callSlice";
 import * as wss from "../wssConnection/wssConnection";
 
@@ -282,8 +283,15 @@ export const hangUp = () => {
 
 
 export const  resetCallDataAfterHangUp = () =>{
-  // make remoteStream to null
-  store.dispatch(setRemoteStream(null));
+  if(store.getState().call.screenSharingActive){
+    // if screen sharing was active when we hang up, then we need to stop the video stream tracks (in screen sharing tracks)
+    screenSharingStream.getTracks().forEach((track)=>{
+      track.stop();
+    })
+  }
+
+  // make call related data
+  store.dispatch(resetCallDataState());
 
   // after making remoteStream null, still our peer connection will be connected with other peer
   // we cannot see him, but still he continues to send us stream
@@ -293,16 +301,13 @@ export const  resetCallDataAfterHangUp = () =>{
 
   // now we create new connection, so that other user can see us for call
   createPeerConnection();
-
   resetCallData();
 
-  if(store.getState().call.screenSharingActive){
-    // if screen sharing was active when we hang up, then we need to stop the video stream tracks (in screen sharing tracks)
-    screenSharingStream.getTracks().forEach((track)=>{
-      track.stop();
-    })
-
-  }
+  const localStream = store.getState().call.localStream;
+  // enable the camera manuanlly ( if caller/callee has turn off camera at the middle of the call, and later he disconneded the call, so after disconnected we will manually enable the camera here, so that for the new call camera is working ) 
+  localStream.getVideoTracks()[0].enabled = true;
+  // same for audio 
+  localStream.getAudioTracks()[0].enabled = true;
 }
 
 export const resetCallData = () => {
