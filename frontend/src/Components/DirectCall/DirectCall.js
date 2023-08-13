@@ -18,11 +18,11 @@ const DirectCall = () => {
     return(
         <>
             <LocalVideoView />
-            {remoteStream && <RemoteVideoView remoteStream={remoteStream} />}
+            {remoteStream && callState === callStates.CALL_IN_PROGRESS && <RemoteVideoView remoteStream={remoteStream} />}
+            {callingDialogVisible && <CallingDialog/>}
             {callRejected.rejected && <CallRejectedDialog reason={callRejected.reason} />}
             { callState === callStates.CALL_REQUESTED && <IncomingCallDialog callerUsername={callerUsername} />}
-            {callingDialogVisible && <CallingDialog/>}
-            <ConversationButtons />
+            {remoteStream && callState === callStates.CALL_IN_PROGRESS && <ConversationButtons /> }
         </>
     );
 }

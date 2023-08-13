@@ -109,7 +109,7 @@ export const callToOtherUser = (calleeDetails) => {
 
 // callee handle
 export const handlePreOffer = (data) => {
-    if(checkIfCallIsPossible){
+    if(checkIfCallIsPossible()){
         connectedUserSocketId = data.callerSocketId; // store caller socketId
         store.dispatch(setCallerUsername(data.callerUsername));
         store.dispatch(setCallState(callStates.CALL_REQUESTED)); // it shows IncomingCallDialog to callee
@@ -222,10 +222,7 @@ export const checkIfCallIsPossible = () => {
 };
 
 
-export const resetCallData = () => {
-    connectedUserSocketId = null;
-    store.dispatch(setCallState(callStates.CALL_AVAILABLE));
-}
+
 
 let screenSharingStream;
 
@@ -265,4 +262,50 @@ export const switchForScreenSharingStream = async () => {
       // so we need to stop the screen stream
       screenSharingStream.getTracks().forEach(track => track.stop());
   }
+}
+
+// other connected user handle
+export const handleUserHangedUp = () => {
+  resetCallDataAfterHangUp();
+}
+
+// disconnect call
+// user who want to hang up, handle this
+export const hangUp = () => {
+  // send connected user hang-up event 
+  wss.sendUserHangedUp({
+    connectedUserSocketId : connectedUserSocketId
+  })
+
+  resetCallDataAfterHangUp();
+}
+
+
+export const  resetCallDataAfterHangUp = () =>{
+  // make remoteStream to null
+  store.dispatch(setRemoteStream(null));
+
+  // after making remoteStream null, still our peer connection will be connected with other peer
+  // we cannot see him, but still he continues to send us stream
+  // so, now we need to close our peer connection
+  peerConnection.close(); // after closing peer connection, we disconnect with other user
+  peerConnection = null;
+
+  // now we create new connection, so that other user can see us for call
+  createPeerConnection();
+
+  resetCallData();
+
+  if(store.getState().call.screenSharingActive){
+    // if screen sharing was active when we hang up, then we need to stop the video stream tracks (in screen sharing tracks)
+    screenSharingStream.getTracks().forEach((track)=>{
+      track.stop();
+    })
+
+  }
+}
+
+export const resetCallData = () => {
+  connectedUserSocketId = null;
+  store.dispatch(setCallState(callStates.CALL_AVAILABLE));
 }

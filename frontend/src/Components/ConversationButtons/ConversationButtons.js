@@ -3,7 +3,7 @@ import { MdCallEnd, MdMic, MdMicOff, MdVideocam, MdVideocamOff, MdVideoLabel, Md
 
 import { setLocalMicrophoneEnabled, setLocalCameraEnabled } from '../../store/slices/callSlice';
 import ConversationButton from './ConversationButton';
-import { switchForScreenSharingStream } from "../../utils/webRTC/webRTCHandler";
+import { switchForScreenSharingStream, hangUp } from "../../utils/webRTC/webRTCHandler";
 
 const styles = {
     buttonContainer : {
@@ -52,12 +52,16 @@ const ConversationButtons = () => {
         switchForScreenSharingStream();
     }
 
+    const handleHangUpButtonPressed = () => {
+        hangUp();
+    }
+
     return (
         <div style={styles.buttonContainer}>
             <ConversationButton onClickHandler = { handleMicButtonPressed } >
                 {localMicrophoneEnabled ? <MdMic style={styles.icon} /> :  <MdMicOff style={styles.icon} />}
             </ConversationButton>
-            <ConversationButton>
+            <ConversationButton onClickHandler={handleHangUpButtonPressed}>
                 <MdCallEnd style={styles.icon} />
             </ConversationButton>
             <ConversationButton onClickHandler={ handleCameraButtonPressed} >

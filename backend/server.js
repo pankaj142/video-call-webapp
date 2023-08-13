@@ -99,4 +99,9 @@ io.on('connection', (socket)=>{
         })
     })
 
+    socket.on('user-hanged-up', (data)=>{
+        console.log('handling user hanged up');
+        io.to(data.connectedUserSocketId).emit('user-hanged-up');
+    })
+
 })
