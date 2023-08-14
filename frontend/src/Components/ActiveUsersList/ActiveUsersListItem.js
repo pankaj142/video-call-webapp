@@ -1,10 +1,14 @@
 
 import userAvatar from "../../assets/userAvatar.png";
+import { callStates } from "../../store/slices/callSlice";
+import { callToOtherUser } from "../../utils/webRTC/webRTCHandler";
 
-const ActiveUsersListItem = ({activeUser}) =>{
+const ActiveUsersListItem = ({activeUser, callState}) =>{
 
     const handleActiveUserPressed = () =>{
-        //
+        if(callState === callStates.CALL_AVAILABLE){
+            callToOtherUser(activeUser)
+        }
     }
 
     return (

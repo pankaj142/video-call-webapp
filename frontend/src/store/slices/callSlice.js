@@ -1,8 +1,27 @@
 import { createSlice } from '@reduxjs/toolkit'; 
 
+export const callStates =  {
+    CALL_UNAVAILABLE : 'CALL_UNAVAILABLE', // when current user don't have access to local stream, so other users cannot call current user
+    CALL_AVAILABLE : 'CALL_AVAILABLE',  // if current user has access to local stream, other user can call current user
+    CALL_REQUESTED : 'CALL_REQUESTED',
+    CALL_IN_PROGRESS : 'CALL_IN_PROGRESS'
+}  
+
 const initialState = {
-    localStream : null
+    localStream : null,
+    callState : callStates.CALL_UNAVAILABLE,
+    callingDialogVisible: false,
+    callerUsername: '',
+    callRejected: {
+        rejected : false,
+        reason: ''
+    },
+    remoteStream : null,
+    localCameraEnabled: true,
+    localMicrophoneEnabled: true,
+    screenSharingActive: false
 }
+ 
 
 export const callSlice = createSlice({
     name : "call",
@@ -13,9 +32,68 @@ export const callSlice = createSlice({
                 ...state,
                 localStream : action.payload
             }
+        },
+        setCallState : (state, action) => {
+            return {
+                ...state,
+                callState: action.payload
+            }
+        },
+        setCallingDialogVisibile : (state, action) =>{
+            return {
+                ...state,
+                callingDialogVisible : action.payload
+            }
+        },
+        setCallerUsername : (state, action) =>{
+            return {
+                ...state,
+                callerUsername: action.payload
+            }
+        },
+        setCallRejected: (state, action) =>{
+            return {
+                ...state,
+                callRejected: action.payload
+            }
+        },
+        setRemoteStream: (state, action) => {
+            return {
+                ...state,
+                remoteStream: action.payload
+            }
+        },
+        setLocalMicrophoneEnabled: (state, action) =>{
+            return {
+                ...state,
+                localMicrophoneEnabled: action.payload
+            }
+        },
+        setLocalCameraEnabled: (state, action) =>{
+            return {
+                ...state,
+                localCameraEnabled: action.payload
+            }
+        },
+        setScreenSharingActive: (state, action) =>{
+            return {
+                ...state,
+                screenSharingActive: action.payload
+            }
+        },
+        resetCallDataState: (state, action) =>{
+            return {
+                ...state,
+                remoteStream: null,
+                screenSharingActive: false,
+                callerUsername: '',
+                localCameraEnabled: true,
+                localMicrophoneEnabled: true,
+                callingDialogVisible: false
+            }
         }
     }
 })
 
-export const  { setLocalStream } = callSlice.actions;
+export const  { setLocalStream, setCallState, setCallingDialogVisibile, setCallerUsername, setCallRejected, setRemoteStream, setLocalMicrophoneEnabled, setLocalCameraEnabled,setScreenSharingActive, resetCallDataState } = callSlice.actions;
 export default callSlice.reducer;
