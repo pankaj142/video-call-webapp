@@ -6,7 +6,7 @@ import logo from "../../assets/logo.png";
 
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from "react-redux";
-import {saveUserName } from '../../store/slices/dashboardSlice';
+import { saveUserName } from '../../store/slices/dashboardSlice';
 import { registerNewUser } from '../../utils/wssConnection/wssConnection';
 
 const LoginPage = () => {
@@ -14,10 +14,10 @@ const LoginPage = () => {
     const navigate = useNavigate()
     const [username, setUsername] = useState("");
 
-    const handleSubmit = () =>{
+    const handleSubmit = () => {
         registerNewUser(username);
-        dispatch(saveUserName(username))
-        navigate("/dashboard")
+        dispatch(saveUserName(username));
+        navigate("/dashboard");
     }
 
     return (
