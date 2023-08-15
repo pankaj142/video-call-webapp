@@ -1,7 +1,8 @@
 
 const express = require("express");
 const socket = require("socket.io");
-
+const {ExpressPeerServer} = require("peer");
+const  groupCallHandler = require("./groupCallHandler");
 const PORT = 5000;
 
 const app = express();
@@ -10,7 +11,17 @@ const server = app.listen(PORT, ()=>{
     console.log(`express server listening on ${PORT}`);
 })
 
+// this express app has 2 connection brokers - 1) socket.io  2) peerjs server - for group call
 
+// peerjs server - connection broker
+const peerServer = ExpressPeerServer(server, {
+    debug: true
+})
+app.use('/peerjs', peerServer);
+groupCallHandler.createPeerServerListeners(peerServer);
+
+
+// socket.io - connection broker
 const io = socket(server, {
     cors : {
         origin : "*",
