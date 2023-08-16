@@ -1,6 +1,6 @@
 const createPeerServerListeners = (peerServer) =>{
     peerServer.on('connection', (client) => {
-        console.log("Successfully connecter to peer js server");
+        console.log("Successfully connected to peerjs server");
         console.log(client.id);
     })
 }

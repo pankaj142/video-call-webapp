@@ -9,13 +9,15 @@ import logo from "../../assets/logo.png";
 import './Dashboard.css';
 import { useSelector } from "react-redux";
 import { callStates } from "../../store/slices/callSlice";
+import * as webRTCGroupCallHandler from "../../utils/webRTC/webRTCGroupCallHandler";
 
 const Dashboard = () => {
     const username = useSelector((state)=> state.dashboard.username)
     const callState = useSelector((state)=> state.call.callState);
 
     useEffect(() => {
-        webRTChandler.getLocalStream()
+        webRTChandler.getLocalStream();
+        webRTCGroupCallHandler.connectWithMyPeer(); // connect with peer server for group calls
     }, []);
 
     return (
