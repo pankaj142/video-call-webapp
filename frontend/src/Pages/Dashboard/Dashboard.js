@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import ActiveUsersList from "../../Components/ActiveUsersList/ActiveUsersList";
 import DashboardInformation from "../../Components/DashboardInformation/DashboardInformation";
 import DirectCall from "../../Components/DirectCall/DirectCall";
+import GroupCallRooomsList from "../../Components/GroupCallRoomsList/GroupCallRoomsList";
 import * as webRTChandler from "../../utils/webRTC/webRTCHandler";
 
 import logo from "../../assets/logo.png";
@@ -29,7 +30,7 @@ const Dashboard = () => {
                     <DashboardInformation username={username} /> }  
                 </div>
                 <div className="dashboard_rooms_container background_secondary_color">
-                    room
+                    <GroupCallRooomsList/>
                 </div>
             </div>
             <div className="dashboard_right_section background_secondary_color">
