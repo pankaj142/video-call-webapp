@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import ActiveUsersList from "../../Components/ActiveUsersList/ActiveUsersList";
 import DashboardInformation from "../../Components/DashboardInformation/DashboardInformation";
 import DirectCall from "../../Components/DirectCall/DirectCall";
+import GroupCall from "../../Components/GroupCall/GroupCall";
 import GroupCallRooomsList from "../../Components/GroupCallRoomsList/GroupCallRoomsList";
 import * as webRTChandler from "../../utils/webRTC/webRTCHandler";
 
@@ -26,6 +27,7 @@ const Dashboard = () => {
             <div className="dashboard_left_section">
                 <div className="dashboard_content_container">
                     <DirectCall />
+                    <GroupCall />
                     { callState !== callStates.CALL_IN_PROGRESS && 
                     <DashboardInformation username={username} /> }  
                 </div>
