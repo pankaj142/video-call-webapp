@@ -1,4 +1,9 @@
+import * as wss from "../wssConnection/wssConnection";
+import {store} from "../../store/store";
+
+
 let myPeer;
+let myPeerId
 
 export const connectWithMyPeer = () => {
     // Peer object we have imported in index.html file, so it gets added to windows Object
@@ -13,5 +18,13 @@ export const connectWithMyPeer = () => {
     myPeer.on('open', (id) => {
         console.log("Successfully connected with peer server");
         console.log(id);
+        myPeerId = id;
+    })
+}
+
+export const createNewGroupCall = () =>{
+    wss.registerGroupCall({
+        username: store.getState().dashboard.username,  
+        peerId: myPeerId
     })
 }
