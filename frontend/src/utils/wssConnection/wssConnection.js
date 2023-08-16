@@ -1,4 +1,4 @@
-import { setActiveUsers } from '../../store/slices/dashboardSlice';
+import { setActiveUsers, setGroupCallRooms } from '../../store/slices/dashboardSlice';
 import { store } from "../../store/store";
 import * as webRTCHandler from "../webRTC/webRTCHandler";
 
@@ -102,6 +102,11 @@ const handleBroadcastEvent = (data) =>{
             store.dispatch(setActiveUsers(activeUsers));
             break;
         
+
+        case broadcastEventTypes.GROUP_CALL_ROOMS :
+            store.dispatch(setGroupCallRooms(data.groupCallRooms));
+            break;
+
         default:
             break;
     }

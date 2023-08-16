@@ -58,6 +58,12 @@ io.on('connection', (socket)=>{
             event: broadcastEventTypes.ACTIVE_USERS,
             activeUsers : peers
         })
+
+        // broacast the group call rooms to all active users
+        io.sockets.emit('broadcast', {
+            event: broadcastEventTypes.GROUP_CALL_ROOMS,
+            groupCallRooms
+        })
     })
 
     // this event occues when user closes the window / tab or handled on client side
@@ -135,6 +141,12 @@ io.on('connection', (socket)=>{
 
         groupCallRooms.push(newGroupCallRoom);
         console.log("groupCallRooms", groupCallRooms)
+
+        // broacast the group call rooms to all active users
+        io.sockets.emit('broadcast', {
+            event: broadcastEventTypes.GROUP_CALL_ROOMS,
+            groupCallRooms
+        })
     })
 
 })
