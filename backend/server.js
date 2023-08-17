@@ -140,7 +140,7 @@ io.on('connection', (socket)=>{
         }
 
         groupCallRooms.push(newGroupCallRoom);
-        console.log("groupCallRooms", groupCallRooms)
+        // console.log("groupCallRooms", groupCallRooms)
 
         // broacast the group call rooms to all active users
         io.sockets.emit('broadcast', {

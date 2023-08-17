@@ -1,5 +1,6 @@
 import * as wss from "../wssConnection/wssConnection";
 import {store} from "../../store/store";
+import { callStates, setCallState, setGroupCallActive } from "../../store/slices/callSlice";
 
 
 let myPeer;
@@ -23,8 +24,15 @@ export const connectWithMyPeer = () => {
 }
 
 export const createNewGroupCall = () =>{
+    console.log("ssssssssssss")
     wss.registerGroupCall({
         username: store.getState().dashboard.username,  
         peerId: myPeerId
     })
+
+    // group call started
+    store.dispatch(setGroupCallActive(true));
+
+    // while in group call, we are not able to call anybody from the list and also nobody would be able to call us
+    store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
 }
