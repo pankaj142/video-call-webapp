@@ -149,4 +149,15 @@ io.on('connection', (socket)=>{
         })
     })
 
+    socket.on('group-call-join-request', (data)=>{
+        // emit event to all users of the same group call room, saying that new user has join the room
+        io.to(data.roomId).emit('group-call-join-request',{
+            peerId: data.peerId,
+            streamId: data.localStreamId
+        })
+
+        // new user joins the group call room 
+        socket.join(data.roomId);
+    })
+
 })

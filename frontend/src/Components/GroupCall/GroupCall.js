@@ -8,6 +8,7 @@ const GroupCall = () => {
     const localStream = useSelector((state) => state.call.localStream);
     const callState = useSelector((state) => state.call.callState);
     const groupCallActive = useSelector((state)=> state.call.groupCallActive);
+    const groupCallStreams = useSelector((state)=> state.call.groupCallStreams);
 
     const createRoom = () => {
         // create new room
@@ -21,7 +22,7 @@ const GroupCall = () => {
                 <GroupCallButton  onClickHandler={createRoom} label='Creat room' />
             }
             {
-                groupCallActive && <GroupCallRoom/>
+                groupCallActive && <GroupCallRoom groupCallStreams={groupCallStreams} />
             }
         </>
     )

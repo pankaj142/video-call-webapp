@@ -1,6 +1,7 @@
 import { setActiveUsers, setGroupCallRooms } from '../../store/slices/dashboardSlice';
 import { store } from "../../store/store";
 import * as webRTCHandler from "../webRTC/webRTCHandler";
+import *  as webRTCGroupCallHandler from "../webRTC/webRTCGroupCallHandler"
 
 import socketClient  from "socket.io-client";
 
@@ -51,6 +52,12 @@ export const connectWithWebSocket = () =>{
         webRTCHandler.handleUserHangedUp();
     })
 
+    // listeners ralated with group calls
+
+    socket.on('group-call-join-request', (data) => {
+        webRTCGroupCallHandler.connectToNewUser(data);
+    })
+
 }
 
 export const registerNewUser = (username) =>{
@@ -93,6 +100,10 @@ export const sendUserHangedUp = (data) =>{
 
 export const registerGroupCall = (data) => {
     socket.emit('group-call-register', data);
+}
+
+export const userWantsToJoinGroupCall = (data) =>{
+    socket.emit('group-call-join-request', data);
 }
 
 const handleBroadcastEvent = (data) =>{
