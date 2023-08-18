@@ -15,6 +15,10 @@ const GroupCall = () => {
         webRTCGroupCallHandler.createNewGroupCall();
     } 
 
+    const leaveRoom = () => {
+        webRTCGroupCallHandler.leaveGroupCall();
+    }
+
     return (
         <>
             {
@@ -23,6 +27,9 @@ const GroupCall = () => {
             }
             {
                 groupCallActive && <GroupCallRoom groupCallStreams={groupCallStreams} />
+            }
+            {
+                groupCallActive && <GroupCallButton onClickHandler={leaveRoom} label='Leave room' />
             }
         </>
     )

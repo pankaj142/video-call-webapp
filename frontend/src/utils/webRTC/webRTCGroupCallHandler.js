@@ -1,10 +1,11 @@
 import * as wss from "../wssConnection/wssConnection";
 import {store} from "../../store/store";
-import { callStates, setCallState, setGroupCallActive, setGroupCallIncomingStreams } from "../../store/slices/callSlice";
+import { callStates, setCallState, setGroupCallActive, setGroupCallIncomingStreams, clearGroupCallData } from "../../store/slices/callSlice";
 
 
 let myPeer;
-let myPeerId
+let myPeerId;
+let groupCallRoomId;
 
 export const connectWithMyPeer = () => {
     // Peer object we have imported in index.html file, so it gets added to windows Object
@@ -53,6 +54,8 @@ export const createNewGroupCall = () =>{
 
 export const joinGroupCall = (hostSocketId, roomId) =>{
     const localStream = store.getState().call.localStream;
+    groupCallRoomId = roomId;
+
     wss.userWantsToJoinGroupCall({
         peerId: myPeerId,
         hostSocketId,
@@ -75,12 +78,34 @@ export const connectToNewUser = (data) =>{
         const streams = store.getState().call.groupCallStreams;
 
         // check if incoming stream is not present in groupCallStreams
-        const stream = streams.find((stream) => stream.id !== incomingStream.id);
+        const stream = streams.find((stream) => stream.id === incomingStream.id);
 
         if(!stream){ // if incoming stream not present then add it to groupCallStreams
             addVideoStream(incomingStream);
         }
     })
+}
+
+export const leaveGroupCall = () => {
+    wss.userLeftGroupCall({
+        streamId: store.getState().call.localStream.id,
+        roomId: groupCallRoomId
+    });
+
+    groupCallRoomId = null;
+    store.dispatch(clearGroupCallData());
+    myPeer.destroy();
+
+    // start new peer connection
+    connectWithMyPeer();
+}
+
+export const removeInactiveStream = (data) => {
+    // filter out inactive user stream
+    const groupCallStreams = store.getState().call.groupCallStreams.filter(stream => stream.id !== data.streamId);
+
+    // update group call streams in local
+    store.dispatch(setGroupCallIncomingStreams(groupCallStreams));
 }
 
 const addVideoStream = (incomingStream) =>{
