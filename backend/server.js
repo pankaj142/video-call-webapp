@@ -160,4 +160,14 @@ io.on('connection', (socket)=>{
         socket.join(data.roomId);
     })
 
+    socket.on('group-call-user-left', (data)=>{
+        // leave the group call room
+        socket.leave(data.roomId);
+
+        // inform same group group call users that one user left from room 
+        io.to(data.roomId).emit('group-call-user-left', {
+            streamId: data.streamId
+        })
+    })
+
 })
