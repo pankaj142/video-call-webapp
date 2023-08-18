@@ -14,7 +14,7 @@ const GroupCallRoom = ({ groupCallStreams }) => {
                 }
                 
             </div>
-            <ConversationButtons />
+            <ConversationButtons groupCall={true} />
         </div>
     )
 }

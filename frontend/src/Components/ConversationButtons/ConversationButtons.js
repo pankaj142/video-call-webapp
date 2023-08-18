@@ -19,7 +19,7 @@ const styles = {
     }
 }
 
-const ConversationButtons = () => {
+const ConversationButtons = ({groupCall}) => {
     const dispatch = useDispatch();
 
     const localStream = useSelector((state) => state.call.localStream);
@@ -61,15 +61,17 @@ const ConversationButtons = () => {
             <ConversationButton onClickHandler = { handleMicButtonPressed } >
                 {localMicrophoneEnabled ? <MdMic style={styles.icon} /> :  <MdMicOff style={styles.icon} />}
             </ConversationButton>
-            <ConversationButton onClickHandler={handleHangUpButtonPressed}>
+            { !groupCall && <ConversationButton onClickHandler={handleHangUpButtonPressed}>
                 <MdCallEnd style={styles.icon} />
             </ConversationButton>
+            }       
             <ConversationButton onClickHandler={ handleCameraButtonPressed} >
                 {localCameraEnabled ? <MdVideocam style={styles.icon} /> : <MdVideocamOff style={styles.icon} />}
             </ConversationButton>
-            <ConversationButton onClickHandler={handleScreenSharingButtonPressed} >
+            { !groupCall && <ConversationButton onClickHandler={handleScreenSharingButtonPressed} >
                 { screenSharingActive ? <MdCamera style={styles.icon} /> : <MdVideoLabel style={styles.icon} /> }
             </ConversationButton>
+            }   
 
         </div>
     )
