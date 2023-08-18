@@ -113,16 +113,32 @@ export const userLeftGroupCall = (data) =>{
     socket.emit('group-call-user-left', data);
 }
 
+export const groupCallClosedByHost = (data) =>{
+    socket.emit('group-call-closed-by-host', data);
+}
+
 const handleBroadcastEvent = (data) =>{
     switch (data.event) {
         case broadcastEventTypes.ACTIVE_USERS :
             const activeUsers = data.activeUsers.filter((activeUser)=> activeUser.socketId !== socket.id)
             store.dispatch(setActiveUsers(activeUsers));
             break;
-        
 
         case broadcastEventTypes.GROUP_CALL_ROOMS :
-            store.dispatch(setGroupCallRooms(data.groupCallRooms));
+            // user should not see his own created room, so removing this user's created room from groupCallRooms list
+            const groupCallRooms = data.groupCallRooms.filter(room => room.socketId !== socket.id);
+            
+            // if the group call room is closed by host and other users are just active in that room, then clear closed room data for that user 
+            const activeGroupCallRoomId = webRTCGroupCallHandler.checkActiveGroupCall();
+            if(activeGroupCallRoomId){
+                const room = groupCallRooms.find(room => room.roomId === activeGroupCallRoomId);
+                
+                if(!room){ // means, this user is active in room which is closed by host(owner), so clear  group room data 
+                    webRTCGroupCallHandler.clearGroupData();
+                }
+            }
+
+            store.dispatch(setGroupCallRooms(groupCallRooms));
             break;
 
         default:

@@ -170,4 +170,15 @@ io.on('connection', (socket)=>{
         })
     })
 
+    socket.on('group-call-closed-by-host', (data)=>{
+        // remove the closed room from groupCallRooms list, so that that room will not be visible to other users
+        groupCallRooms = groupCallRooms.filter(room => room.peerId !== data.peerId);
+
+        // broadcast updated groupCallRooms list to all users
+        io.sockets.emit('broadcast', {
+            event: broadcastEventTypes.GROUP_CALL_ROOMS,
+            groupCallRooms
+        })
+    })
+
 })

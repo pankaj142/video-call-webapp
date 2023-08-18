@@ -6,6 +6,7 @@ import { callStates, setCallState, setGroupCallActive, setGroupCallIncomingStrea
 let myPeer;
 let myPeerId;
 let groupCallRoomId;
+let groupCallHost = false; // set true if the user creates a group
 
 export const connectWithMyPeer = () => {
     // Peer object we have imported in index.html file, so it gets added to windows Object
@@ -40,6 +41,7 @@ export const connectWithMyPeer = () => {
 }
 
 export const createNewGroupCall = () =>{
+    groupCallHost = true; // this user has created a new group
     wss.registerGroupCall({
         username: store.getState().dashboard.username,  
         peerId: myPeerId
@@ -87,12 +89,23 @@ export const connectToNewUser = (data) =>{
 }
 
 export const leaveGroupCall = () => {
-    wss.userLeftGroupCall({
-        streamId: store.getState().call.localStream.id,
-        roomId: groupCallRoomId
-    });
+    if(groupCallHost){ // this user is host of this room
+        // he will emit event to server that, group is cloded by group host
+        wss.groupCallClosedByHost({
+            peerId: myPeerId
+        })
+    }else{ // this user is not host, then this user will remove inactive streams
+        wss.userLeftGroupCall({
+            streamId: store.getState().call.localStream.id,
+            roomId: groupCallRoomId
+        });
+    }
+    clearGroupData();
+}
 
+export const clearGroupData = () => {
     groupCallRoomId = null;
+    groupCallHost = false;
     store.dispatch(clearGroupCallData());
     myPeer.destroy();
 
@@ -114,4 +127,13 @@ const addVideoStream = (incomingStream) =>{
         incomingStream
     ]
     store.dispatch(setGroupCallIncomingStreams(groupCallStreams));
+}
+
+// if group call is active (user has joined some group call room) return roomId if not return false
+export const checkActiveGroupCall = () => {
+    if(store.getState().call.groupCallActive){
+        return groupCallRoomId;
+    }else{
+        return false;
+    }
 }
