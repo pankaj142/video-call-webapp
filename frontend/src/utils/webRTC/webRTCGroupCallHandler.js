@@ -111,6 +111,11 @@ export const clearGroupData = () => {
 
     // start new peer connection
     connectWithMyPeer();
+
+    // after group call closed, we want our local stream to have video track and audio track enabled
+    const localStream = store.getState().call.localStream;
+    localStream.getVideoTracks()[0].enabled = true;
+    localStream.getAudioTracks()[0].enabled = true;
 }
 
 export const removeInactiveStream = (data) => {

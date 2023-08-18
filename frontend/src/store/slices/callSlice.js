@@ -111,7 +111,9 @@ export const callSlice = createSlice({
                 ...state,
                 groupCallActive: false,
                 groupCallStreams: [],
-                callState: callStates.CALL_AVAILABLE
+                callState: callStates.CALL_AVAILABLE,
+                localCameraEnabled: true,
+                localMicrophoneEnabled: true
             }
         }
     }

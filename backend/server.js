@@ -76,6 +76,15 @@ io.on('connection', (socket)=>{
             event: broadcastEventTypes.ACTIVE_USERS,
             activeUsers : peers
         })
+        
+        // if user disconnect (close the browser tab or window), who is the owner of a group call room, then remove that room from groupCallRooms and broacast the updated groupCallRooms to all users
+        groupCallRooms = groupCallRooms.filter(room => room.socketId !== socket.id);
+
+        // broacast the updated group call rooms to all active users
+        io.sockets.emit('broadcast', {
+            event: broadcastEventTypes.GROUP_CALL_ROOMS,
+            groupCallRooms
+        })
     })
 
     // events listeners related to direct calls
