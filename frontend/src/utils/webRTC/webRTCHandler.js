@@ -38,6 +38,7 @@ let connectedUserSocketId;
 // for callee => hold socketID of caller
 
 let peerConnection;
+let dataChannel;
 
 // get access to cameras and microphonec connected to the computer or smartphone
 export const getLocalStream = () => {
@@ -72,6 +73,26 @@ const createPeerConnection = () =>{
   peerConnection.ontrack = ({streams:[stream]}) => {
     store.dispatch(setRemoteStream(stream));
     // dispatch remote stream in our store
+  }
+
+  // data channel - receiver side
+  // incoming data channel messages - for receive and sending data over this peer connection
+  peerConnection.ondatachannel = (event) => {
+    const dataChannel = event.channel;
+
+    dataChannel.onopen = () =>{ 
+      console.log('Peer connection is ready to receive data channel messages')
+    }
+
+    // handle received messages on data channel
+    dataChannel.onmessage = (event) => {
+    }
+  }
+
+  // data channel - sender side
+  dataChannel = peerConnection.createDataChannel('chat');
+  dataChannel.onopen = () => {
+    console.log('chat data channel successfully opened');
   }
 
   // event-2 onicecandidate : receive ICE candidate from stun server, we will send that ice candidates to connected user
