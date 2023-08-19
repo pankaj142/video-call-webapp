@@ -8,7 +8,8 @@ import {
   setCallRejected,
   setRemoteStream,
   setScreenSharingActive,
-  resetCallDataState
+  resetCallDataState,
+  setChatMessage
 } from "../../store/slices/callSlice";
 import * as wss from "../wssConnection/wssConnection";
 
@@ -86,6 +87,10 @@ const createPeerConnection = () =>{
 
     // handle received messages on data channel
     dataChannel.onmessage = (event) => {
+      store.dispatch(setChatMessage({
+        received: true,
+        content: event.data
+      }))
     }
   }
 
@@ -337,4 +342,8 @@ export const  resetCallDataAfterHangUp = () =>{
 export const resetCallData = () => {
   connectedUserSocketId = null;
   store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+}
+
+export const sendMessageUsingDataChannel = (message) =>{
+  dataChannel.send(message);
 }
