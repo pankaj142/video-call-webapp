@@ -4,9 +4,29 @@ const socket = require("socket.io");
 const { v4: uuidv4} = require("uuid");
 const {ExpressPeerServer} = require("peer");
 const  groupCallHandler = require("./groupCallHandler");
-const PORT = 5000;
+const twilio = require("twilio");
+const cors = require("cors");
+const dotenv = require("dotenv")
+
+dotenv.config();
+const PORT = process.env.PORT || 5000;
+
 
 const app = express();
+
+app.use(cors()); // our routes can be accessible from anywhere (from every origin)
+
+app.get('/', (req, res)=>{
+    res.send({api: 'video-call-api'}) 
+})
+
+// client calls this api for TURN credentials
+app.get('/api/get-turn-data', (req, res)=>{
+    const accountSid = process.env.ACCOUNT_SID;
+    const authToken = process.env.AUTH_TOKEN;
+    const clinet = twilio(accountSid, authToken)
+    clinet.tokens.create().then((token) => res.send({ token})) // from token we get TURN server credentials
+})
 
 const server = app.listen(PORT, ()=>{
     console.log(`express server listening on ${PORT}`);
