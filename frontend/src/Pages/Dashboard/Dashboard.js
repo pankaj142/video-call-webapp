@@ -1,5 +1,6 @@
 
 import { useEffect } from "react";
+import axios from "axios";
 import ActiveUsersList from "../../Components/ActiveUsersList/ActiveUsersList";
 import DashboardInformation from "../../Components/DashboardInformation/DashboardInformation";
 import DirectCall from "../../Components/DirectCall/DirectCall";
@@ -12,14 +13,25 @@ import './Dashboard.css';
 import { useSelector } from "react-redux";
 import { callStates } from "../../store/slices/callSlice";
 import * as webRTCGroupCallHandler from "../../utils/webRTC/webRTCGroupCallHandler";
+import { setTurnServers } from "../../utils/webRTC/TURN";
 
 const Dashboard = () => {
     const username = useSelector((state)=> state.dashboard.username)
     const callState = useSelector((state)=> state.call.callState);
 
     useEffect(() => {
-        webRTChandler.getLocalStream();
-        webRTCGroupCallHandler.connectWithMyPeer(); // connect with peer server for group calls
+        // fetch TURN credentials from our backend  
+        axios.get('http://localhost:5000/api/get-turn-data')
+            .then((response) => {
+                console.log("res ddata", response);
+                setTurnServers(response.data.token.iceServers);
+
+                webRTChandler.getLocalStream();
+                webRTCGroupCallHandler.connectWithMyPeer(); // connect with peer server for group calls
+            }).catch((err)=>{
+                console.log("Error occured during fetching TURN credentials from backend");
+                console.log(err);
+            })
     }, []);
 
     return (

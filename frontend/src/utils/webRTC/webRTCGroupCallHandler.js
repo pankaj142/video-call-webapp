@@ -1,6 +1,7 @@
 import * as wss from "../wssConnection/wssConnection";
 import {store} from "../../store/store";
 import { callStates, setCallState, setGroupCallActive, setGroupCallIncomingStreams, clearGroupCallData } from "../../store/slices/callSlice";
+import { getTurnServers } from "./TURN";
 
 
 let myPeer;
@@ -14,7 +15,10 @@ export const connectWithMyPeer = () => {
     myPeer = new window.Peer(undefined, { // first argument we can pass our own id, but if we pass undefined then Peer server will create Ids itself
         path: '/peerjs', // same path that we have added in backend
         host: '/',
-        port: 5000 // express app port
+        port: 5000, // express app port
+        config: {
+            iceServers: [...getTurnServers(), { url: 'stun:stun.1uand1.de:3478'}] // if twilio does not send turnServers in some cases, then this second item, stun server can be used (this is just random working stun server ) 
+        }
     });
 
     // start connection with Peer server

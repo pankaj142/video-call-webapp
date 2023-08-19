@@ -12,6 +12,7 @@ import {
   setChatMessage
 } from "../../store/slices/callSlice";
 import * as wss from "../wssConnection/wssConnection";
+import { getTurnServers } from "./TURN";
 
 const preOfferAnswers = {
   CALL_ACCEPTED: "CALL_ACCEPTED",
@@ -27,12 +28,7 @@ const defaultConstrains = {
   audio: true,
 };
 
-// configuration related to RTCConnection
-let configuration = {
-  iceServers: [{
-    urls: 'stun:stun.l.google.com:13902' // free stun server url
-  }]
-}
+
 
 let connectedUserSocketId;
 // for caller => hold socketId of callee
@@ -62,6 +58,17 @@ export const getLocalStream = () => {
 };
 
 const createPeerConnection = () =>{
+
+  const turnServers = getTurnServers();
+
+  // configuration related to RTCConnection
+  let configuration = {
+    iceServers: [...turnServers, { url: 'stun:stun.1uand1.de:3478'}], // if twilio does not send turnServers in some cases, then this second item, stun server can be used (this is just random working stun server ) 
+    iceTransportPolicy: 'relay' // so it means it only accept ICE candidates of type 'relay', and if we only accept type of 'relay' of ICE candidates, all of the connections would go through that TURN servers, so it will cost for TURN server usage.
+    // we are going with low video resolution, so cost will be very less
+    // you can remove this policy setting, if it cost alot
+  }
+
   peerConnection = new RTCPeerConnection(configuration);
   const localStream = store.getState().call.localStream;
 
