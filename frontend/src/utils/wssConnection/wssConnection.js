@@ -5,7 +5,7 @@ import *  as webRTCGroupCallHandler from "../webRTC/webRTCGroupCallHandler"
 
 import socketClient  from "socket.io-client";
 
-const SERVER = 'http://localhost:5000';
+const SERVER = process.env.REACT_APP_SERVER_URL;
 
 const broadcastEventTypes = {
     ACTIVE_USERS : 'ACTIVE_USERS',
