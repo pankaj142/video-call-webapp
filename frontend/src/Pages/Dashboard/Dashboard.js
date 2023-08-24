@@ -1,21 +1,36 @@
 
 import { useEffect } from "react";
+import axios from "axios";
 import ActiveUsersList from "../../Components/ActiveUsersList/ActiveUsersList";
 import DashboardInformation from "../../Components/DashboardInformation/DashboardInformation";
 import DirectCall from "../../Components/DirectCall/DirectCall";
+import GroupCall from "../../Components/GroupCall/GroupCall";
+import GroupCallRooomsList from "../../Components/GroupCallRoomsList/GroupCallRoomsList";
 import * as webRTChandler from "../../utils/webRTC/webRTCHandler";
 
 import logo from "../../assets/logo.png";
 import './Dashboard.css';
 import { useSelector } from "react-redux";
 import { callStates } from "../../store/slices/callSlice";
+import * as webRTCGroupCallHandler from "../../utils/webRTC/webRTCGroupCallHandler";
+import { setTurnServers } from "../../utils/webRTC/TURN";
 
 const Dashboard = () => {
     const username = useSelector((state)=> state.dashboard.username)
     const callState = useSelector((state)=> state.call.callState);
 
     useEffect(() => {
-        webRTChandler.getLocalStream()
+        // fetch TURN credentials from our backend  
+        axios.get(`${process.env.REACT_APP_SERVER_URL}/api/get-turn-data`)
+            .then((response) => {
+                setTurnServers(response.data.token.iceServers);
+
+                webRTChandler.getLocalStream();
+                webRTCGroupCallHandler.connectWithMyPeer(); // connect with peer server for group calls
+            }).catch((err)=>{
+                console.log("Error occured during fetching TURN credentials from backend");
+                console.log(err);
+            })
     }, []);
 
     return (
@@ -23,11 +38,12 @@ const Dashboard = () => {
             <div className="dashboard_left_section">
                 <div className="dashboard_content_container">
                     <DirectCall />
+                    <GroupCall />
                     { callState !== callStates.CALL_IN_PROGRESS && 
                     <DashboardInformation username={username} /> }  
                 </div>
                 <div className="dashboard_rooms_container background_secondary_color">
-                    room
+                    <GroupCallRooomsList/>
                 </div>
             </div>
             <div className="dashboard_right_section background_secondary_color">

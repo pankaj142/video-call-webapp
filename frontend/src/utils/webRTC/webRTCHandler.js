@@ -8,9 +8,11 @@ import {
   setCallRejected,
   setRemoteStream,
   setScreenSharingActive,
-  resetCallDataState
+  resetCallDataState,
+  setChatMessage
 } from "../../store/slices/callSlice";
 import * as wss from "../wssConnection/wssConnection";
+import { getTurnServers } from "./TURN";
 
 const preOfferAnswers = {
   CALL_ACCEPTED: "CALL_ACCEPTED",
@@ -19,22 +21,21 @@ const preOfferAnswers = {
 };
 
 const defaultConstrains = {
-  video: true,
+  video: {
+    width:480,
+    height: 360
+  },
   audio: true,
 };
 
-// configuration related to RTCConnection
-let configuration = {
-  iceServers: [{
-    urls: 'stun:stun.l.google.com:13902' // free stun server url
-  }]
-}
+
 
 let connectedUserSocketId;
 // for caller => hold socketId of callee
 // for callee => hold socketID of caller
 
 let peerConnection;
+let dataChannel;
 
 // get access to cameras and microphonec connected to the computer or smartphone
 export const getLocalStream = () => {
@@ -57,6 +58,17 @@ export const getLocalStream = () => {
 };
 
 const createPeerConnection = () =>{
+
+  const turnServers = getTurnServers();
+
+  // configuration related to RTCConnection
+  let configuration = {
+    iceServers: [...turnServers, { url: 'stun:stun.1uand1.de:3478'}], // if twilio does not send turnServers in some cases, then this second item, stun server can be used (this is just random working stun server ) 
+    iceTransportPolicy: 'relay' // so it means it only accept ICE candidates of type 'relay', and if we only accept type of 'relay' of ICE candidates, all of the connections would go through that TURN servers, so it will cost for TURN server usage.
+    // we are going with low video resolution, so cost will be very less
+    // you can remove this policy setting, if it cost alot
+  }
+
   peerConnection = new RTCPeerConnection(configuration);
   const localStream = store.getState().call.localStream;
 
@@ -69,6 +81,30 @@ const createPeerConnection = () =>{
   peerConnection.ontrack = ({streams:[stream]}) => {
     store.dispatch(setRemoteStream(stream));
     // dispatch remote stream in our store
+  }
+
+  // data channel - receiver side
+  // incoming data channel messages - for receive and sending data over this peer connection
+  peerConnection.ondatachannel = (event) => {
+    const dataChannel = event.channel;
+
+    dataChannel.onopen = () =>{ 
+      console.log('Peer connection is ready to receive data channel messages')
+    }
+
+    // handle received messages on data channel
+    dataChannel.onmessage = (event) => {
+      store.dispatch(setChatMessage({
+        received: true,
+        content: event.data
+      }))
+    }
+  }
+
+  // data channel - sender side
+  dataChannel = peerConnection.createDataChannel('chat');
+  dataChannel.onopen = () => {
+    console.log('chat data channel successfully opened');
   }
 
   // event-2 onicecandidate : receive ICE candidate from stun server, we will send that ice candidates to connected user
@@ -313,4 +349,8 @@ export const  resetCallDataAfterHangUp = () =>{
 export const resetCallData = () => {
   connectedUserSocketId = null;
   store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+}
+
+export const sendMessageUsingDataChannel = (message) =>{
+  dataChannel.send(message);
 }

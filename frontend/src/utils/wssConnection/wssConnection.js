@@ -1,10 +1,11 @@
-import { setActiveUsers } from '../../store/slices/dashboardSlice';
+import { setActiveUsers, setGroupCallRooms } from '../../store/slices/dashboardSlice';
 import { store } from "../../store/store";
 import * as webRTCHandler from "../webRTC/webRTCHandler";
+import *  as webRTCGroupCallHandler from "../webRTC/webRTCGroupCallHandler"
 
 import socketClient  from "socket.io-client";
 
-const SERVER = 'http://localhost:5000';
+const SERVER = process.env.REACT_APP_SERVER_URL;
 
 const broadcastEventTypes = {
     ACTIVE_USERS : 'ACTIVE_USERS',
@@ -51,6 +52,15 @@ export const connectWithWebSocket = () =>{
         webRTCHandler.handleUserHangedUp();
     })
 
+    // listeners ralated with group calls
+
+    socket.on('group-call-join-request', (data) => {
+        webRTCGroupCallHandler.connectToNewUser(data);
+    })
+
+    socket.on('group-call-user-left', (data) => {
+        webRTCGroupCallHandler.removeInactiveStream(data);
+    })
 }
 
 export const registerNewUser = (username) =>{
@@ -89,13 +99,48 @@ export const sendUserHangedUp = (data) =>{
     socket.emit('user-hanged-up', data);
 }
 
+// emmiting events related to group calls
+
+export const registerGroupCall = (data) => {
+    socket.emit('group-call-register', data);
+}
+
+export const userWantsToJoinGroupCall = (data) =>{
+    socket.emit('group-call-join-request', data);
+}
+
+export const userLeftGroupCall = (data) =>{
+    socket.emit('group-call-user-left', data);
+}
+
+export const groupCallClosedByHost = (data) =>{
+    socket.emit('group-call-closed-by-host', data);
+}
+
 const handleBroadcastEvent = (data) =>{
     switch (data.event) {
         case broadcastEventTypes.ACTIVE_USERS :
             const activeUsers = data.activeUsers.filter((activeUser)=> activeUser.socketId !== socket.id)
             store.dispatch(setActiveUsers(activeUsers));
             break;
-        
+
+        case broadcastEventTypes.GROUP_CALL_ROOMS :
+            // user should not see his own created room, so removing this user's created room from groupCallRooms list
+            const groupCallRooms = data.groupCallRooms.filter(room => room.socketId !== socket.id);
+            
+            // if the group call room is closed by host and other users are just active in that room, then clear closed room data for that user 
+            const activeGroupCallRoomId = webRTCGroupCallHandler.checkActiveGroupCall();
+            if(activeGroupCallRoomId){
+                const room = groupCallRooms.find(room => room.roomId === activeGroupCallRoomId);
+                
+                if(!room){ // means, this user is active in room which is closed by host(owner), so clear  group room data 
+                    webRTCGroupCallHandler.clearGroupData();
+                }
+            }
+
+            store.dispatch(setGroupCallRooms(groupCallRooms));
+            break;
+
         default:
             break;
     }
