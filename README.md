@@ -4,7 +4,7 @@ Video call webApp. Clone of Google meet (not exactly).
 Please excuse for the UI part, as intent of doing the project was to learn webRTC and build video call app only and not UI part.
 
 ## APP URL 
-https://video-call-webapp-ck29a1cvx-pankaj142.vercel.app
+https://video-call-webapp.vercel.app
 
 ## Tech stack 
     WebRTC
@@ -51,7 +51,7 @@ Backend is deployed in Heroku platform using Heroku CLI
 Frontend is deployed in Vercel platform
 
 ### APP URL 
-https://video-call-webapp-ck29a1cvx-pankaj142.vercel.app
+https://video-call-webapp.vercel.app
 
 
 ## Learning from this Video chat app project
