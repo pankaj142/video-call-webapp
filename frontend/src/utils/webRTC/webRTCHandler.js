@@ -270,8 +270,6 @@ export const switchForScreenSharingStream = async () => {
         store.dispatch(setScreenSharingActive(true));
         const senders = peerConnection.getSenders(); // returns array of objects, each of which represents the RTP sender responsible for transmitting one track's (video or audio) data
 
-        console.log("senders", senders);
-    
         // get sender which sends video track (ie. sender with kind = video)
         // currently, this sender is sending camera video track
         const sender = senders.find(sender => sender.track.kind === screenSharingStream.getVideoTracks()[0].kind);

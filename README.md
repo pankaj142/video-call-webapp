@@ -15,6 +15,8 @@ https://video-call-webapp-ck29a1cvx-pankaj142.vercel.app
     Redux toolkit
 
 
+## Note => Kindly on your webcamera while using this app
+
 ## Features
 
 ### Join

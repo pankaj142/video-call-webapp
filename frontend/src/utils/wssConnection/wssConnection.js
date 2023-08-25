@@ -79,7 +79,6 @@ export const sendPreOffer = (data) =>{
 
 // callee emits this event
 export const sendPreOfferAnswer = (data) => {
-    console.log("sendPreOfferAnswer",data)    
     socket.emit('pre-offer-answer', data)
 }
 

@@ -23,7 +23,7 @@ const Dashboard = () => {
         // fetch TURN credentials from our backend  
         axios.get(`${process.env.REACT_APP_SERVER_URL}/api/get-turn-data`)
             .then((response) => {
-                setTurnServers(response.data.token.iceServers);
+                setTurnServers(response.data.data);
 
                 webRTChandler.getLocalStream();
                 webRTCGroupCallHandler.connectWithMyPeer(); // connect with peer server for group calls

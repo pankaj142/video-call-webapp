@@ -21,10 +21,32 @@ app.get('/', (req, res)=>{
 
 // client calls this api for TURN credentials
 app.get('/api/get-turn-data', (req, res)=>{
-    const accountSid = process.env.ACCOUNT_SID;
-    const authToken = process.env.AUTH_TOKEN;
-    const clinet = twilio(accountSid, authToken)
-    clinet.tokens.create().then((token) => res.send({ token})) // from token we get TURN server credentials
+    try{
+        const accountSid = process.env.ACCOUNT_SID;
+        const authToken = process.env.AUTH_TOKEN;
+        const client = twilio(accountSid, authToken)
+        client.tokens.create().then((data) => {
+            if(data){
+                res.json({ 
+                    success: true,
+                    data: data.iceServers
+                })
+            }else{
+                res.json({
+                    success: true,
+                    data: []
+                })
+            }
+        }) // from token we get TURN server credentials
+    }catch(err){
+        return res.json({
+            success: false,
+            error : {
+                message: 'Something went wrong while fetching ICE servers'
+            }
+        })
+    }
+    
 })
 
 const server = app.listen(PORT, ()=>{
